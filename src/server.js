@@ -4,8 +4,8 @@ import cors from 'cors';
 import { env } from './utils/env.js';
 import { ENV_VARS } from './constants/constants.js';
 import router from './routers/index.js';
-import { notFoundHandler } from './middlewares/NotFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
 const PORT = Number(env(ENV_VARS.PORT, '3000'));
 

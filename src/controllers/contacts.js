@@ -33,10 +33,14 @@ export const getContactsByIdController = async (req, res, next) => {
   });
 };
 
-export const deleteContactsByIdController = async (req, res) => {
+export const deleteContactsByIdController = async (req, res, next) => {
   const { contactId } = req.params;
 
-  await deleleteConatactsById(contactId);
+  const contact = await deleleteConatactsById(contactId);
+
+  if (!contact) {
+    throw createHttpError(404, 'Contact not found');
+  }
 
   res.status(204).send();
 };
@@ -70,16 +74,15 @@ export const createContactsController = async (req, res) => {
 export const patchContactsControllers = async (req, res, next) => {
   const id = req.params.contactId;
   const { body } = req;
-  const contact = await updateContact(id, body);
+  const result = await updateContact(id, body);
 
-  if (!contact) {
-    next(createHttpError(404, 'Contact not found'));
-    return;
+  if (!result) {
+    throw createHttpError(404, 'Contact not found');
   }
 
   res.send({
     status: 200,
     message: `Successfully created a contact!`,
-    data: contact,
+    data: result.contact,
   });
 };

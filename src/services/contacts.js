@@ -11,7 +11,7 @@ export const getContactsById = async (contactId) => {
 };
 
 export const deleleteConatactsById = async (contactId) => {
-  return await contactsModel.findOneAndDelete(contactId);
+  return await contactsModel.findOneAndDelete({ _id: contactId });
 };
 
 export const createContacts = async (payload) => {

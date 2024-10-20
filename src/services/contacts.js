@@ -1,8 +1,38 @@
 import { contactsModel } from '../db/models/contacts.js';
+import { createPaginationData } from '../utils/validation/createPagination.js';
 
-export const getAllContacts = async () => {
-  const contacts = await contactsModel.find();
-  return contacts;
+export const getAllContacts = async ({
+  page = 1,
+  perPage = 10,
+  sortOrder = 'asc',
+  sortBy = '_id',
+  filter = {},
+}) => {
+  const skip = (page - 1) * perPage;
+  const contactsQuery = contactsModel.find();
+
+  if (filter.contactType) {
+    contactsQuery.where('contactType').equals(filter.contactType);
+  }
+  if (filter.isFavourite) {
+    contactsQuery.where('isFavourite').equals(filter.isFavourite);
+  }
+
+  const [count, contacts] = await Promise.all([
+    contactsModel.find().merge(contactsQuery).countDocuments(),
+    contactsModel
+      .find()
+      .skip(skip)
+      .limit(perPage)
+      .sort({
+        [sortBy]: sortOrder,
+      }),
+  ]);
+
+  return {
+    contacts,
+    ...createPaginationData(count, page, perPage),
+  };
 };
 
 export const getContactsById = async (contactId) => {

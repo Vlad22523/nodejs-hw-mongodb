@@ -30,7 +30,7 @@ export const getAllContacts = async ({
   ]);
 
   return {
-    contacts,
+    data: contacts,
     ...createPaginationData(count, page, perPage),
   };
 };

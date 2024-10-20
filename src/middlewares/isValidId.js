@@ -7,7 +7,10 @@ export const isValidId =
     const id = req.params[idName];
 
     if (!isValidObjectId(id)) {
-      throw createHttpError(400, 'Bad request');
+      throw createHttpError(
+        400,
+        `Invalid ${idName}: ${id}. Expected a valid MongoDB ObjectId.`,
+      );
     }
 
     next();

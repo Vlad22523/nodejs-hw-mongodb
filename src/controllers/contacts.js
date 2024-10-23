@@ -34,6 +34,7 @@ export const getContactsController = async (req, res) => {
 
 export const getContactsByIdController = async (req, res, next) => {
   const { contactId } = req.params;
+  console.log(req.user._id);
 
   const contact = await getContactsById(contactId, req.user._id);
 
@@ -63,6 +64,8 @@ export const deleteContactsByIdController = async (req, res, next) => {
 export const createContactsController = async (req, res) => {
   const { name, phoneNumber, email, isFavourite, contactType } = req.body;
 
+  const userId = req.user._id;
+
   const newContactData = {
     name,
     phoneNumber,
@@ -77,7 +80,7 @@ export const createContactsController = async (req, res) => {
     newContactData.isFavourite = isFavourite;
   }
 
-  const newContact = await createContacts(newContactData, req.user._id);
+  const newContact = await createContacts(newContactData, userId);
 
   res.status(201).send({
     status: 201,

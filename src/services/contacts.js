@@ -37,7 +37,8 @@ export const getAllContacts = async ({
 };
 
 export const getContactsById = async (contactId, userId) => {
-  const contact = await contactsModel.findById({ _id: contactId, userId });
+  console.log('Searching contact with conditions:', { _id: contactId, userId });
+  const contact = await contactsModel.findOne({ _id: contactId, userId });
   return contact;
 };
 
@@ -49,7 +50,7 @@ export const createContacts = async (payload, userId) => {
   return await contactsModel.create({ ...payload, userId });
 };
 
-export const updateContact = async (id, payload, options = {}, userId) => {
+export const updateContact = async (id, payload, userId, options = {}) => {
   const rawResult = await contactsModel.findOneAndUpdate(
     { _id: id, userId },
     payload,

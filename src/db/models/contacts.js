@@ -1,4 +1,5 @@
 import { model, Schema } from 'mongoose';
+import { UsersModel } from './user.js';
 
 const contactsSchema = new Schema(
   {
@@ -24,6 +25,7 @@ const contactsSchema = new Schema(
       enum: ['work', 'home', 'personal'],
       default: 'personal',
     },
+    userId: { type: Schema.ObjectId, required: true, ref: UsersModel },
   },
   {
     timestamps: true,

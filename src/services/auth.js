@@ -7,6 +7,11 @@ import {
   ACCESS_TOKEN_LIVE_TIME,
   REFRESH_TOKEN_LIVE_TIME,
 } from '../constants/time.js';
+import { emailClient } from '../utils/validation/emailClient.js';
+import { MONGO_DB_VARS } from '../constants/constants.js';
+import { env } from '../utils/env.js';
+import { generateResetPasswordEmail } from '../utils/validation/generateResetPasswordEmail.js';
+import jwt from 'jsonwebtoken';
 
 const createSession = () => ({
   accessToken: crypto.randomBytes(16).toString('base64'),
@@ -86,4 +91,59 @@ export const refreshSession = async (sessionId, sessionToken) => {
   });
 
   return newSession;
+};
+
+export const sendResetPasswordToken = async (email) => {
+  const user = await UsersModel.findOne({ email });
+
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  const resetToken = jwt.sign(
+    {
+      sub: user._id,
+      email,
+    },
+    env(MONGO_DB_VARS.JWT_SECRET),
+    { expiresIn: 1 },
+  );
+
+  const resetLink = `${env(
+    MONGO_DB_VARS.FRONTEND_DOMAIN,
+  )}/reset-password?token=${resetToken}`;
+
+  try {
+    await emailClient.sendMail({
+      to: email,
+      from: env(MONGO_DB_VARS.SMTP_FROM),
+      html: generateResetPasswordEmail({
+        name: user.name,
+        resetLink: resetLink,
+      }),
+      subject: 'Reset your password!',
+    });
+  } catch (error) {
+    console.log(error);
+    throw createHttpError(500, error.message);
+  }
+};
+
+export const resetPassword = async ({ token, password }) => {
+  let payload;
+  try {
+    payload = jwt.verify(token, env(MONGO_DB_VARS.JWT_SECRET));
+  } catch (error) {
+    throw createHttpError(401, error.message);
+  }
+
+  const user = await UsersModel.findOne(payload.sub);
+
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  await UsersModel.findByIdAndUpdate(user._id, { password: hashedPassword });
 };

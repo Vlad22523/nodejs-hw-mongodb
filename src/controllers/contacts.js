@@ -9,6 +9,10 @@ import {
 import { validatePaginationParams } from '../utils/validation/parsePaginationParams.js';
 import { parseSortParams } from '../utils/validation/parseSortParams.js';
 import { parseFilterParams } from '../utils/validation/parseFilterParams.js';
+import { env } from '../utils/env.js';
+import { saveImageToCloudinary } from '../utils/validation/saveImageToCloudinary.js';
+import { saveImageToLocally } from '../utils/validation/saveImageToLocally.js';
+import { MONGO_DB_VARS } from '../constants/constants.js';
 
 export const getContactsController = async (req, res) => {
   const { page, perPage } = validatePaginationParams(req.query);
@@ -64,11 +68,23 @@ export const createContactsController = async (req, res) => {
   const { name, phoneNumber, email, isFavourite, contactType } = req.body;
 
   const userId = req.user._id;
+  const photo = req.file;
+
+  let avatarUrl;
+
+  if (photo) {
+    if (env(MONGO_DB_VARS.IS_CLOUDINARY_ENABLED) === 'true') {
+      avatarUrl = await saveImageToCloudinary(photo);
+    } else {
+      avatarUrl = await saveImageToLocally(photo);
+    }
+  }
 
   const newContactData = {
     name,
     phoneNumber,
     contactType,
+    avatarUrl,
   };
 
   if (email) {

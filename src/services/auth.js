@@ -106,7 +106,7 @@ export const sendResetPasswordToken = async (email) => {
       email,
     },
     env(MONGO_DB_VARS.JWT_SECRET),
-    { expiresIn: '15m' },
+    { expiresIn: 60 * 15 },
   );
 
   const resetLink = `${env(
@@ -137,7 +137,12 @@ export const resetPassword = async ({ token, password }) => {
     throw createHttpError(401, error.message);
   }
 
-  const user = await UsersModel.findOne(payload.sub);
+  const user = await UsersModel.findOne({
+    email: payload.email,
+    _id: payload.sub,
+  });
+
+  // const user = await UsersModel.findOne(payload.sub);
 
   if (!user) {
     throw createHttpError(404, 'User not found');
@@ -145,5 +150,12 @@ export const resetPassword = async ({ token, password }) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  await UsersModel.findByIdAndUpdate(user._id, { password: hashedPassword });
+  // await UsersModel.findByIdAndUpdate(user._id, { password: hashedPassword });
+  try {
+    await UsersModel.updateOne({ _id: user._id }, { password: hashedPassword });
+    await SessionsModel.deleteMany({ userId: user._id });
+  } catch (error) {
+    console.log(error);
+    throw createHttpError(401, 'Token is expired or invalid.');
+  }
 };

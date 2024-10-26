@@ -1,5 +1,6 @@
 import { contactsModel } from '../db/models/contacts.js';
 import { createPaginationData } from '../utils/validation/createPagination.js';
+import { saveImage } from '../utils/validation/saveImage.js';
 
 export const getAllContacts = async ({
   page = 1,
@@ -49,10 +50,21 @@ export const createContacts = async (payload, userId) => {
   return await contactsModel.create({ ...payload, userId });
 };
 
-export const updateContact = async (id, payload, userId, options = {}) => {
+export const updateContact = async (
+  id,
+  { file, ...payload },
+  userId,
+  options = {},
+) => {
+  let avatarUrl;
+
+  if (file) {
+    /*  avatarUrl = await saveImageToLocally(file);*/
+    avatarUrl = await saveImage(file);
+  }
   const rawResult = await contactsModel.findOneAndUpdate(
     { _id: id, userId },
-    payload,
+    { ...payload, avatarUrl },
     {
       new: true,
       includeResultMetadata: true,

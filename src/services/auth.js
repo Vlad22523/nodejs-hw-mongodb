@@ -106,7 +106,7 @@ export const sendResetPasswordToken = async (email) => {
       email,
     },
     env(MONGO_DB_VARS.JWT_SECRET),
-    { expiresIn: 1 },
+    { expiresIn: '15m' },
   );
 
   const resetLink = `${env(
@@ -125,7 +125,7 @@ export const sendResetPasswordToken = async (email) => {
     });
   } catch (error) {
     console.log(error);
-    throw createHttpError(500, error.message);
+    throw createHttpError(500, 'Error in sending email');
   }
 };
 

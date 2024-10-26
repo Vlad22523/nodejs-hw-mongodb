@@ -26,6 +26,7 @@ const contactsSchema = new Schema(
       default: 'personal',
     },
     userId: { type: Schema.Types.ObjectId, required: true, ref: UsersModel },
+    avatarUrl: { type: String, default: null, required: true },
   },
   {
     timestamps: true,

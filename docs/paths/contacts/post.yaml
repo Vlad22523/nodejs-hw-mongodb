@@ -11,7 +11,6 @@ requestBody:
       schema:
         type: object
         required:
-          - _id
           - name
           - phoneNumber
           - contactType
@@ -35,7 +34,7 @@ requestBody:
             description: "Contact's type"
             type: string
             enum: ['work', 'home', 'personal']
-          avatarUrl:
+          photo:
             description: "Link to contact's photo"
             type: string
             format: binary

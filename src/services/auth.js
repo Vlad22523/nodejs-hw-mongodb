@@ -175,7 +175,7 @@ export const verifyGoogleOauth = async (code) => {
     user = await UsersModel.create({
       name,
       email,
-      avatarUrl: picture,
+      photo: picture,
       password,
     });
   }

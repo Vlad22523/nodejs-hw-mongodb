@@ -56,15 +56,15 @@ export const updateContact = async (
   userId,
   options = {},
 ) => {
-  let avatarUrl;
+  let photo;
 
   if (file) {
     /*  avatarUrl = await saveImageToLocally(file);*/
-    avatarUrl = await saveImage(file);
+    photo = await saveImage(file);
   }
   const rawResult = await contactsModel.findOneAndUpdate(
     { _id: id, userId },
-    { ...payload, avatarUrl },
+    { ...payload, photo },
     {
       new: true,
       includeResultMetadata: true,

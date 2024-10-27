@@ -70,13 +70,13 @@ export const createContactsController = async (req, res) => {
   const userId = req.user._id;
   const photo = req.file;
 
-  let avatarUrl;
+  let photoUrl;
 
   if (photo) {
     if (env(MONGO_DB_VARS.IS_CLOUDINARY_ENABLED) === 'true') {
-      avatarUrl = await saveImageToCloudinary(photo);
+      photoUrl = await saveImageToCloudinary(photo);
     } else {
-      avatarUrl = await saveImageToLocally(photo);
+      photoUrl = await saveImageToLocally(photo);
     }
   }
 
@@ -84,7 +84,7 @@ export const createContactsController = async (req, res) => {
     name,
     phoneNumber,
     contactType,
-    avatarUrl,
+    photo: photoUrl,
   };
 
   if (email) {

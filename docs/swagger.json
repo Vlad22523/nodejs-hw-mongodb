@@ -186,7 +186,6 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "_id",
                   "name",
                   "phoneNumber",
                   "contactType"
@@ -220,7 +219,7 @@
                       "personal"
                     ]
                   },
-                  "avatarUrl": {
+                  "photo": {
                     "description": "Link to contact's photo",
                     "type": "string",
                     "format": "binary",
@@ -330,9 +329,9 @@
         "tags": [
           "Contacts"
         ],
-        "summary": "Update a contact",
-        "description": "Updates an existing contact by its ID.",
+        "summary": "Patch contact by id",
         "operationId": "patchContact",
+        "description": "Patch contact by id",
         "security": [
           {
             "bearerAuth": []
@@ -340,17 +339,16 @@
         ],
         "parameters": [
           {
-            "name": "contactId",
             "in": "path",
+            "name": "contactId",
             "required": true,
-            "description": "The ID of the contact to update.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "65ca67e7ae7f10c88b598384"
             }
           }
         ],
         "requestBody": {
-          "required": true,
           "content": {
             "multipart/form-data": {
               "schema": {
@@ -358,37 +356,38 @@
                 "properties": {
                   "name": {
                     "description": "Contact's name",
-                    "example": "John Doe"
+                    "type": "string",
+                    "example": "Eddy Canter Din"
                   },
                   "phoneNumber": {
-                    "description": "Contact's phone number",
+                    "description": "Contact's phoneNumber",
                     "type": "string",
-                    "example": 380000000003
+                    "example": "+381999191919"
                   },
                   "email": {
                     "description": "Contact's email",
                     "type": "string",
-                    "example": "user@mail.com"
+                    "example": "Eddy_Canter_Din@rose.com"
                   },
                   "isFavourite": {
-                    "description": "Favorite contact",
+                    "description": "Contact's isFavourite",
                     "type": "boolean",
                     "example": false
                   },
                   "contactType": {
-                    "description": "Contact's type",
+                    "description": "Contact's contactType",
                     "type": "string",
                     "enum": [
-                      "work",
+                      "personal",
                       "home",
-                      "personal"
-                    ]
+                      "work"
+                    ],
+                    "example": "personal"
                   },
-                  "avatarUrl": {
+                  "photo": {
                     "description": "Link to contact's photo",
                     "type": "string",
-                    "format": "binary",
-                    "example": "https://res.cloudinary.com/uqwgdu/image/upload/image.png"
+                    "format": "binary"
                   }
                 }
               }
@@ -397,11 +396,16 @@
         },
         "responses": {
           "200": {
-            "description": "Successfully updated the contact.",
+            "description": "Patch contact by id and body",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
                   "properties": {
                     "status": {
                       "type": "integer",
@@ -409,23 +413,22 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully patched a contact!"
+                      "example": "Successfully updated a contact!"
                     },
                     "data": {
                       "type": "object",
-                      "properties": {
-                        "contact": {
-                          "$ref": "#/components/schemas/contact"
-                        }
-                      }
+                      "$ref": "#/components/schemas/Contact"
                     }
                   }
                 }
               }
             }
           },
-          "404": {
+          "401": {
             "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
           }
         }
       },
@@ -475,6 +478,62 @@
     },
     "schemas": {
       "contact": {
+        "type": "object",
+        "required": [
+          "_id",
+          "name",
+          "phoneNumber",
+          "contactType"
+        ],
+        "properties": {
+          "_id": {
+            "description": "Contact's id",
+            "type": "string",
+            "example": "65e4decdd286b30065d54af9"
+          },
+          "name": {
+            "description": "Contact's name",
+            "type": "string",
+            "example": "John Doe"
+          },
+          "phoneNumber": {
+            "description": "Contact's phone number",
+            "type": "string",
+            "example": 380000000003
+          },
+          "email": {
+            "description": "Contact's email",
+            "type": "string",
+            "example": "user@mail.com"
+          },
+          "isFavourite": {
+            "description": "Favorite contact",
+            "type": "boolean",
+            "example": false
+          },
+          "contactType": {
+            "description": "Contact's type",
+            "type": "string",
+            "enum": [
+              "work",
+              "home",
+              "personal"
+            ]
+          },
+          "userId": {
+            "description": "Contact's parent id",
+            "type": "string",
+            "example": "65e4decdd286b30065d54af9"
+          },
+          "avatarUrl": {
+            "description": "Link to contact's photo",
+            "type": "string",
+            "format": "binary",
+            "example": "https://res.cloudinary.com/uqwgdu/image/upload/image.png"
+          }
+        }
+      },
+      "Contact": {
         "type": "object",
         "required": [
           "_id",

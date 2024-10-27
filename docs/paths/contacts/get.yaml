@@ -35,7 +35,6 @@ parameters:
     schema:
       type: string
       enum: ['work', 'home', 'personal']
-      example: personal
 responses:
   '200':
     description: Successfully found students!
